@@ -1,0 +1,6 @@
+transaction_id,customer_id,amount,currency,transaction_date,status
+1001,501,249.99,PLN,2026-11-01 10:30:00,completed
+1002,502,150.50,EUR,2026-11-01 11:45:00,pending
+1003,503,89.99,PLN,2026-11-02 09:15:00,completed
+1004,504,320.00,USD,2026-11-02 14:20:00,failed
+1005,505,49.90,PLN,2026-11-03 16:10:00,completed
