@@ -7,3 +7,5 @@ CREATE TABLE raw.transactions (
     status VARCHAR(20) NOT NULL CHECK (status IN ('completed', 'pending', 'failed')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+##dsadas
