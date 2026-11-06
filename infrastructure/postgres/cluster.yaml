@@ -1,0 +1,16 @@
+
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+
+metadata:
+  name: financial-postgres
+  namespace: data-platform
+
+spec:
+  instances: 1
+
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.5
+
+  storage:
+    storageClass: standard
+    size: 5Gi

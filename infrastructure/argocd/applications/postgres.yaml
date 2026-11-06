@@ -1,0 +1,27 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+
+metadata:
+  name: financial-postgres
+  namespace: argocd
+
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/ErnestF3700/financial-data-platform.git
+    targetRevision: main
+    path: infrastructure/postgres
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: data-platform
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
