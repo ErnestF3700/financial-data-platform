@@ -54,3 +54,58 @@ def test_load_missing_required_columns():
         match="Missing required columns: {'currency'}"
     ):
         load_transactions(df)
+
+def test_load_invalid_amount():
+    df = pd.DataFrame([
+        {
+            "transaction_id": 90021,
+            "customer_id": 501,
+            "amount": -199.99,  # Invalid negative amount
+            "currency": "PLN",
+            "transaction_date": "2023-09-01 10:00:00",
+            "status": "completed"
+        }
+    ])
+    
+    with pytest.raises(
+        ValueError,
+        match="Transaction amount must be greater than zero"
+    ):
+        load_transactions(df)
+        
+def test_load_invalid_currency_length():
+    df = pd.DataFrame([
+        {
+            "transaction_id": 90021,
+            "customer_id": 501,
+            "amount": 199.99,
+            "currency": "PL",  # Invalid currency length
+            "transaction_date": "2023-09-01 10:00:00",
+            "status": "completed"
+        }
+    ])
+    
+    with pytest.raises(
+        ValueError,
+        match="Currency must contain exactly 3 characters"
+    ):
+        load_transactions(df)
+        
+        
+def test_load_invalid_status():
+    df = pd.DataFrame([
+        {
+            "transaction_id": 90021,
+            "customer_id": 501,
+            "amount": 199.99,
+            "currency": "PLN",
+            "transaction_date": "2023-09-01 10:00:00",
+            "status": "invalid_status"  # Invalid status
+        }
+    ])
+    
+    with pytest.raises(
+        ValueError,
+        match=r"Invalid transaction status. Valid statuses are:"
+    ):
+        load_transactions(df)
