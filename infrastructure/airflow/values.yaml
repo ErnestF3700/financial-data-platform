@@ -68,4 +68,5 @@ config:
     load_examples: "False"
 # Environment variables from Kubernetes Secret
 extraEnvFrom: |
+  - secretRef:
       name: financial-etl-db
