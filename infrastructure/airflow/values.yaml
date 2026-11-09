@@ -1,0 +1,71 @@
+
+# Airflow 3.2.2 - Helm chart 1.22.0
+
+executor: LocalExecutor
+
+allowPodLaunching: false
+allowJobLaunching: false
+
+# Existing PostgreSQL CNPG
+data:
+  metadataSecretName: airflow-metadata
+
+# Kubernetes Secrets
+fernetKeySecretName: airflow-fernet-key
+apiSecretKeySecretName: airflow-api-secret
+
+# Disable bundled PostgreSQL, Redis and PgBouncer
+postgresql:
+  enabled: false
+
+redis:
+  enabled: false
+
+pgbouncer:
+  enabled: false
+
+# Airflow components
+scheduler:
+  enabled: true
+  replicas: 1
+
+apiServer:
+  enabled: true
+  replicas: 1
+
+dagProcessor:
+  enabled: true
+  replicas: 1
+# Custom Airflow image
+images:
+  airflow:
+    repository: financial-airflow
+    tag: "3.2.2"
+    pullPolicy: IfNotPresent
+# No Celery workers with LocalExecutor
+workers:
+  celery:
+    replicas: 0
+
+# DAGs from GitHub
+dags:
+  persistence:
+    enabled: false
+
+  gitSync:
+    enabled: true
+    repo: https://github.com/ErnestF3700/financial-data-platform.git
+    branch: main
+    rev: HEAD
+    ref: main
+    depth: 1
+    subPath: dags
+    period: 30s
+
+# Do not load example DAGs
+config:
+  core:
+    load_examples: "False"
+# Environment variables from Kubernetes Secret
+extraEnvFrom: |
+      name: financial-etl-db

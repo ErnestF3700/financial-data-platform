@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+
+metadata:
+  name: airflow
+  namespace: argocd
+
+spec:
+  project: default
+
+  sources:
+    # Official Apache Airflow Helm chart
+    - repoURL: https://airflow.apache.org
+      chart: airflow
+      targetRevision: 1.22.0
+      helm:
+        valueFiles:
+          - $values/infrastructure/airflow/values.yaml
+
+    # Our GitHub repository containing Helm values
+    - repoURL: https://github.com/ErnestF3700/financial-data-platform.git
+      targetRevision: main
+      ref: values
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: airflow
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
