@@ -3,7 +3,14 @@ from sqlalchemy import text
 
 from src.config.database import engine
 
-
+REQUIRED_COLUMNS = [
+    "transaction_id",
+    "customer_id",
+    "amount",
+    "currency",
+    "transaction_date",
+    "status"
+]
 
 INSERT_QUERY = text("""
     INSERT INTO raw.transactions (
@@ -48,6 +55,9 @@ def load_transactions(df: pd.DataFrame) ->int:
     
     if df is None or df.empty:
         return 0
+    missing_columns = set(REQUIRED_COLUMNS) - set(df.columns)
+    if missing_columns:
+        raise ValueError(f"Missing required columns: {missing_columns}")
     if df["transaction_id"].duplicated().any():
         raise ValueError("Duplicate transaction IDs found in the DataFrame")
     records = df.to_dict(orient="records")

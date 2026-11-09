@@ -27,9 +27,30 @@ def test_load_duplicate_transaction_ids():
         }
     ])
     
+   
+    
     with pytest.raises(
         ValueError,
         match="Duplicate transaction IDs found in the DataFrame"
     ):
         load_transactions(df)
+        
+        
+        
+def test_load_missing_required_columns():
+    df = pd.DataFrame([
+        {
+            "transaction_id": 90021,
+            "customer_id": 501,
+            "amount": 199.99,
+            # Missing 'currency' column
+            "transaction_date": "2023-09-01 10:00:00",
+            "status": "completed"
+        }
+    ])
     
+    with pytest.raises(
+        ValueError,
+        match="Missing required columns: {'currency'}"
+    ):
+        load_transactions(df)
