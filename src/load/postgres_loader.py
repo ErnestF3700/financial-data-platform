@@ -2,7 +2,7 @@ import pandas as pd
 from sqlalchemy import text
 
 from src.config.database import engine
-
+VALID_STATUSES = {"completed", "pending", "failed"}
 REQUIRED_COLUMNS = [
     "transaction_id",
     "customer_id",
@@ -55,16 +55,18 @@ def load_transactions(df: pd.DataFrame) ->int:
     
     if df is None or df.empty:
         return 0
-    missing_columns = set(REQUIRED_COLUMNS) - set(df.columns)
+    missing_columns = set(REQUIRED_COLUMNS) - set(df.columns) 
+    
     if missing_columns:
         raise ValueError(f"Missing required columns: {missing_columns}")
-    if (df["amount"] < 0).any():
+    if (df["amount"] <= 0).any():
         raise ValueError("Transaction amount must be greater than zero")
     if (df["currency"].str.len() != 3).any():
         raise ValueError("Currency must contain exactly 3 characters")
-    if VALID_STATUSES := {"completed", "pending", "failed"}:
-        if not df["status"].isin(VALID_STATUSES).all():
-            raise ValueError(f"Invalid transaction status. Valid statuses are: {sorted(VALID_STATUSES)}")
+    if not df["status"].isin(VALID_STATUSES).all():
+        raise ValueError(f"Invalid transaction status. Valid statuses are: {sorted(VALID_STATUSES)}")
+    if pd.to_datetime(df["transaction_date"], errors='coerce').isna().any():
+        raise ValueError("Invalid transaction date")
     if df["transaction_id"].duplicated().any():
         raise ValueError("Duplicate transaction IDs found in the DataFrame")
     records = df.to_dict(orient="records")

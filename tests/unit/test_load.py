@@ -109,3 +109,18 @@ def test_load_invalid_status():
         match=r"Invalid transaction status. Valid statuses are:"
     ):
         load_transactions(df)
+        
+def test_load_invalid_transaction_date():
+    df = pd.DataFrame([
+        {
+            "transaction_id": 90022,
+            "customer_id": 501,
+            "amount": 199.99,
+            "currency": "PLN",
+            "transaction_date": "not-a-date",
+            "status": "completed"
+        }
+    ])
+
+    with pytest.raises(ValueError, match="Invalid transaction date"):
+        load_transactions(df)
